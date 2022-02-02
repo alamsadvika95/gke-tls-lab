@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - host: nginxapp.singorojo.my.id
+    http:
+      paths:
+      - backend:
+          service:
+            name: nginx-web
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  - host: nodejsapp.singorojo.my.id
+    http:
+      paths:
+      - backend:
+          service:
+            name: nodejs-app
+            port:
+              number: 80
+        path: /
+        pathType: Prefix

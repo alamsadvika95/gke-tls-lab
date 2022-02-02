@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: test1-ingress
+  namespace:  test
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - host: test1.singorojo.my.id
+    http:
+      paths:
+      - backend:
+          service:
+            name: test1-service
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  - host: test2.singorojo.my.id
+    http:
+      paths:
+      - backend:
+          service:
+            name: test2-service
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  - host: test3.singorojo.my.id
+    http:
+      paths:
+      - backend:
+          service:
+            name: test3-service
+            port:
+              number: 80
+        path: /
+        pathType: Prefix

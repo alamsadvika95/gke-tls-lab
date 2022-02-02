@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-server
+  labels:
+    type: endpoints-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-server
+  template:
+    metadata:
+      labels:
+        app: hello-server
+    spec:
+      containers:
+      - name: esp
+        image: gcr.io/endpoints-release/endpoints-runtime:1
+        args: [
+          "--http_port=8081",
+          "--backend=127.0.0.1:8080",
+          "--service=$(JWT_AUDIENCE)",
+          "--rollout_strategy=managed",
+        ]
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8081
+            scheme: HTTP
+        readinessProbe:
+          httpGet:
+            path: /
+            scheme: HTTP
+            port: 8081
+        ports:
+          - name: http
+            containerPort: 8081
+        env:
+        - name: JWT_AUDIENCE
+          valueFrom:
+            configMapKeyRef:
+              name: env-var
+              key: JWT_AUDIENCE
+      - name: hello-app
+        image: gcr.io/google-samples/hello-app:1.0
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 8080

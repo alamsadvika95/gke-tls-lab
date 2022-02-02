@@ -1,0 +1,19 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: esp-tls
+  namespace: default
+spec:
+  secretName: esp-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: api.endpoints.[MY-PROJECT].cloud.goog
+  dnsNames:
+  - api.endpoints.cicd-339902.cloud.goog
+  acme:
+    config:
+    - http01:
+        ingress: esp-ingress
+      domains:
+      - api.endpoints.cicd-339902.cloud.goog
