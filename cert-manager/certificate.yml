@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: app-cert
+  namespace: app
+spec:
+  secretName: app-cert-tls
+  issuerRef:
+    # The issuer created previously
+    name: letsencrypt-prod
+  dnsNames:
+  - app1.singorojo.my.id
+  - www.app1.singorojo.my.id
