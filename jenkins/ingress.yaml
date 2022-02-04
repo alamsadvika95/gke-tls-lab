@@ -1,0 +1,45 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: jenkins-cert
+  namespace: jenkins
+spec:
+  secretName: jenkins-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: jenkins.singorojo.my.id
+  dnsNames:
+  - jenkins.singorojo.my.id
+
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jenkins-ingress
+  namespace: jenkins
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    external-dns.alpha.kubernetes.io/ttl: "1m"
+  labels:
+    type: jenkins
+spec:
+  tls:
+  - hosts:
+    - jenkins.singorojo.my.id
+    secretName: jenkins-tls
+  rules:
+  - host: jenkins.singorojo.my.id
+    http:
+      paths:
+      - path: /
+        pathType: Exact
+        backend:
+          service:
+            name: jenkins
+            port:
+              number: 80

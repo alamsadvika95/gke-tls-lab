@@ -1,0 +1,90 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: app1-cert
+  namespace: app
+spec:
+  secretName: app1-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: app1.singorojo.my.id
+  dnsNames:
+  - app1.singorojo.my.id
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: app2-cert
+  namespace: app
+spec:
+  secretName: app2-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: app2.singorojo.my.id
+  dnsNames:
+  - app2.singorojo.my.id
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app1-ingress
+  namespace: app 
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    external-dns.alpha.kubernetes.io/ttl: "1m"
+  labels:
+    type: app1
+spec:
+  tls:
+  - hosts:
+    - app1.singorojo.my.id
+    secretName: app1-tls
+  rules:
+  - host: app1.singorojo.my.id
+    http:
+      paths:
+      - path: /
+        pathType: Exact
+        backend:
+          service:
+            name: webapp1-svc
+            port:
+              number: 80
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app2-ingress
+  namespace: app 
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    external-dns.alpha.kubernetes.io/ttl: "1m"
+  labels:
+    type: app2
+spec:
+  tls:
+  - hosts:
+    - app2.singorojo.my.id
+    secretName: app2-tls
+  rules:
+  - host: app2.singorojo.my.id
+    http:
+      paths:
+      - path: /
+        pathType: Exact
+        backend:
+          service:
+            name: webapp2-svc
+            port:
+              number: 80
